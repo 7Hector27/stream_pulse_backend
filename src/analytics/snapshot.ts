@@ -1,4 +1,3 @@
-import { Pool } from "pg";
 import { pool } from "../db";
 
 export async function snapshotViewerCount(
