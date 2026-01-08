@@ -5,6 +5,9 @@ import { WebSocketServer } from "ws";
 
 import healthRoutes from "./routes/health";
 import streamRoutes from "./routes/streams";
+import analyticsRoutes from "./routes/analytics";
+
+import { snapshotViewerCount } from "./analytics/snapshot";
 
 const app = express();
 const PORT = 4000;
@@ -14,6 +17,7 @@ app.use(express.json());
 
 app.use(healthRoutes);
 app.use(streamRoutes);
+app.use(analyticsRoutes);
 
 const server = createServer(app);
 
@@ -55,6 +59,12 @@ function broadcast(streamId: string) {
     }
   });
 }
+
+setInterval(() => {
+  Object.entries(viewers).forEach(([streamId, count]) => {
+    snapshotViewerCount(streamId, count);
+  });
+}, 60_000); // every 30 seconds
 
 server.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
